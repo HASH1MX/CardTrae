@@ -12,7 +12,7 @@ const cardImages = [
     { name: 'teal', color: '#008080' },
     { name: 'lime', color: '#32CD32' },
     { name: 'magenta', color: '#FF00FF' }
-    // 12 different colors for 24 cards total (12 pairs)
+    // 12 colors that will be duplicated to create 12 pairs (24 cards total)
 ];
 
 // Game variables
@@ -129,43 +129,54 @@ function flipCard() {
 
 // Check if the flipped cards match
 function checkForMatch() {
-    const card1 = flippedCards[0];
-    const card2 = flippedCards[1];
+    const [firstCard, secondCard] = flippedCards;
     
-    if (card1.dataset.cardName === card2.dataset.cardName) {
-        // Cards match
-        card1.classList.add('matched');
-        card2.classList.add('matched');
-        card1.removeEventListener('click', flipCard);
-        card2.removeEventListener('click', flipCard);
+    if (firstCard.dataset.cardName === secondCard.dataset.cardName) {
+        // It's a match!
+        firstCard.classList.add('matched');
+        secondCard.classList.add('matched');
         
-        // Update score and matched pairs
+        // Add match animation
+        firstCard.classList.add('match-animation');
+        secondCard.classList.add('match-animation');
+        
+        // Play match sound effect
+        playSound('match');
+        
+        setTimeout(() => {
+            firstCard.classList.remove('match-animation');
+            secondCard.classList.remove('match-animation');
+        }, 1200);
+        
+        flippedCards = [];
+        matchedPairs++;
         score += 10;
         scoreElement.textContent = score;
-        matchedPairs++;
         
         // Check if all pairs are matched
-        if (matchedPairs === cardImages.length) {
-            endGame();
+        if (matchedPairs === cardImages.length / 2) {
+            clearInterval(timerInterval);
+            setTimeout(() => {
+                showGameCompleteMessage();
+            }, 800);
         }
     } else {
-        // Cards don't match, flip them back
-        setTimeout(() => {
-            card1.classList.remove('flipped');
-            card2.classList.remove('flipped');
-        }, 1000);
+        // Not a match, flip cards back
+        // Play no-match sound effect
+        playSound('nomatch');
         
-        // Penalty for wrong match
-        if (score > 0) {
-            score -= 1;
-            scoreElement.textContent = score;
-        }
+        // Add no-match animation
+        firstCard.classList.add('no-match');
+        secondCard.classList.add('no-match');
+        
+        setTimeout(() => {
+            firstCard.classList.remove('no-match');
+            secondCard.classList.remove('no-match');
+            firstCard.classList.remove('flipped');
+            secondCard.classList.remove('flipped');
+            flippedCards = [];
+        }, 1000);
     }
-    
-    // Clear flipped cards array
-    setTimeout(() => {
-        flippedCards = [];
-    }, 1000);
 }
 
 // Start the timer
@@ -176,12 +187,43 @@ function startTimer() {
     }, 1000);
 }
 
-// End the game
-function endGame() {
-    clearInterval(timerInterval);
-    setTimeout(() => {
-        alert(`Congratulations! You completed the game in ${timer} seconds with a score of ${score}!`);
-    }, 500);
+// Play sound effects
+function playSound(type) {
+    // Create audio context if it doesn't exist
+    if (!window.AudioContext && !window.webkitAudioContext) {
+        return; // Browser doesn't support Web Audio API
+    }
+    
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    const audioCtx = new AudioContext();
+    
+    // Create oscillator
+    const oscillator = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+    
+    if (type === 'match') {
+        // Happy sound for match
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+        oscillator.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); // E5
+        oscillator.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2); // G5
+        gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+        oscillator.start();
+        oscillator.stop(audioCtx.currentTime + 0.5);
+    } else if (type === 'nomatch') {
+        // Sad sound for no match
+        oscillator.type = 'triangle';
+        oscillator.frequency.setValueAtTime(311.13, audioCtx.currentTime); // Eb4
+        oscillator.frequency.setValueAtTime(277.18, audioCtx.currentTime + 0.2); // C#4
+        gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+        oscillator.start();
+        oscillator.stop(audioCtx.currentTime + 0.4);
+    }
 }
 
 // Reset the game
@@ -190,41 +232,124 @@ resetButton.addEventListener('click', initGame);
 // Initialize the game when the page loads
 window.addEventListener('load', initGame);
 
-// Create a placeholder for the card back pattern until we have actual images
+// Handle card back image loading
 document.addEventListener('DOMContentLoaded', function() {
-    // Create a canvas for the card back pattern
-    const canvas = document.createElement('canvas');
-    canvas.width = 200;
-    canvas.height = 200;
-    const ctx = canvas.getContext('2d');
+    // Try to load the card-back image
+    const cardBackImg = new Image();
+    cardBackImg.src = 'images/card-back.jpg';
     
-    // Draw a pattern similar to what's shown in the image
-    ctx.fillStyle = '#e0e0e0';
-    ctx.fillRect(0, 0, 200, 200);
+    // Handle both successful load and error cases
+    cardBackImg.onload = function() {
+        // Image loaded successfully, but check if it's the SVG data
+        if (cardBackImg.width === 0 || cardBackImg.height === 0) {
+            // Image might be SVG data stored as a file, create a fallback pattern
+            createCardBackPattern();
+        }
+    };
     
-    ctx.strokeStyle = '#a0a0a0';
-    ctx.lineWidth = 2;
+    cardBackImg.onerror = function() {
+        // Image failed to load, create a fallback pattern
+        createCardBackPattern();
+    };
     
-    // Draw grid pattern
-    for (let i = 0; i < 10; i++) {
-        for (let j = 0; j < 10; j++) {
-            if ((i + j) % 2 === 0) {
-                ctx.beginPath();
-                ctx.moveTo(i * 20, j * 20);
-                ctx.lineTo((i + 1) * 20, j * 20);
-                ctx.lineTo((i + 1) * 20, (j + 1) * 20);
-                ctx.lineTo(i * 20, (j + 1) * 20);
-                ctx.closePath();
-                ctx.stroke();
+    // Function to create a card back pattern
+    function createCardBackPattern() {
+        const canvas = document.createElement('canvas');
+        canvas.width = 200;
+        canvas.height = 200;
+        const ctx = canvas.getContext('2d');
+        
+        // Draw a pattern for the card back
+        ctx.fillStyle = '#e0e0e0';
+        ctx.fillRect(0, 0, 200, 200);
+        
+        ctx.strokeStyle = '#a0a0a0';
+        ctx.lineWidth = 2;
+        
+        // Draw grid pattern
+        for (let i = 0; i < 10; i++) {
+            for (let j = 0; j < 10; j++) {
+                if ((i + j) % 2 === 0) {
+                    ctx.beginPath();
+                    ctx.moveTo(i * 20, j * 20);
+                    ctx.lineTo((i + 1) * 20, j * 20);
+                    ctx.lineTo((i + 1) * 20, (j + 1) * 20);
+                    ctx.lineTo(i * 20, (j + 1) * 20);
+                    ctx.closePath();
+                    ctx.stroke();
+                }
             }
         }
+        
+        // Convert canvas to data URL
+        const dataURL = canvas.toDataURL();
+        
+        // Create a style element and set the card-back background
+        const style = document.createElement('style');
+        style.textContent = `.card-back { background-image: url("${dataURL}") !important; }`;
+        document.head.appendChild(style);
     }
+};
+
+// Show game completion message
+function showGameCompleteMessage() {
+    // Create modal container
+    const modalContainer = document.createElement('div');
+    modalContainer.classList.add('modal-container');
     
-    // Convert canvas to data URL
-    const dataURL = canvas.toDataURL();
+    // Create modal content
+    const modalContent = document.createElement('div');
+    modalContent.classList.add('modal-content');
     
-    // Create a style element and set the card-back background
-    const style = document.createElement('style');
-    style.textContent = `.card-back { background-image: url("${dataURL}") !important; }`;
-    document.head.appendChild(style);
-});
+    // Add congratulations message
+    const congratsHeading = document.createElement('h2');
+    congratsHeading.textContent = 'Congratulations!';
+    
+    const messageText = document.createElement('p');
+    messageText.textContent = `You completed the game in ${timer} seconds with a score of ${score}!`;
+    
+    // Add play again button
+    const playAgainButton = document.createElement('button');
+    playAgainButton.textContent = 'Play Again';
+    playAgainButton.classList.add('play-again-button');
+    playAgainButton.addEventListener('click', () => {
+        document.body.removeChild(modalContainer);
+        initGame();
+    });
+    
+    // Assemble modal
+    modalContent.appendChild(congratsHeading);
+    modalContent.appendChild(messageText);
+    modalContent.appendChild(playAgainButton);
+    modalContainer.appendChild(modalContent);
+    
+    // Add to body
+    document.body.appendChild(modalContainer);
+    
+    // Add confetti effect
+    createConfetti();
+}
+
+// Create confetti effect
+function createConfetti() {
+    for (let i = 0; i < 150; i++) {
+        const confetti = document.createElement('div');
+        confetti.classList.add('confetti');
+        confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+        confetti.style.animationDelay = Math.random() * 5 + 's';
+        
+        // Random colors
+        const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        
+        document.body.appendChild(confetti);
+        
+        // Remove confetti after animation
+        setTimeout(() => {
+            if (document.body.contains(confetti)) {
+                document.body.removeChild(confetti);
+            }
+        }, 8000);
+    }
+}
