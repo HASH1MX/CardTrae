@@ -1,8 +1,18 @@
-// Card images for the game
+// Card colors for the game
 const cardImages = [
-    { name: 'apple', src: 'images/apple.jpg' },
-    { name: 'colosseum', src: 'images/colosseum.jpg' },
-    // Add more card images as needed
+    { name: 'red', color: '#FF0000' },
+    { name: 'blue', color: '#0000FF' },
+    { name: 'green', color: '#00FF00' },
+    { name: 'yellow', color: '#FFFF00' },
+    { name: 'purple', color: '#800080' },
+    { name: 'orange', color: '#FFA500' },
+    { name: 'pink', color: '#FFC0CB' },
+    { name: 'cyan', color: '#00FFFF' },
+    { name: 'brown', color: '#A52A2A' },
+    { name: 'teal', color: '#008080' },
+    { name: 'lime', color: '#32CD32' },
+    { name: 'magenta', color: '#FF00FF' }
+    // 12 different colors for 24 cards total (12 pairs)
 ];
 
 // Game variables
@@ -52,16 +62,16 @@ function initGame() {
         cardElement.dataset.cardName = card.name;
         cardElement.dataset.index = index;
         
-        // Create card front (with image)
+        // Create card front (with color)
         const cardFront = document.createElement('div');
         cardFront.classList.add('card-front');
+        cardFront.style.backgroundColor = card.color;
         
-        const cardImage = document.createElement('img');
-        cardImage.classList.add('card-content');
-        cardImage.src = card.src;
-        cardImage.alt = card.name;
-        
-        cardFront.appendChild(cardImage);
+        // Add color name text to the card
+        const colorText = document.createElement('span');
+        colorText.classList.add('color-name');
+        colorText.textContent = card.name;
+        cardFront.appendChild(colorText);
         
         // Create card back
         const cardBack = document.createElement('div');
