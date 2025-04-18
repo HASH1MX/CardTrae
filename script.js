@@ -154,7 +154,7 @@ function checkForMatch() {
         scoreElement.textContent = score;
         
         // Check if all pairs are matched
-        if (matchedPairs === cardImages.length / 2) {
+        if (matchedPairs === cardImages.length) { // We have 12 pairs total (24 cards)
             clearInterval(timerInterval);
             setTimeout(() => {
                 showGameCompleteMessage();
@@ -234,23 +234,25 @@ window.addEventListener('load', initGame);
 
 // Handle card back image loading
 document.addEventListener('DOMContentLoaded', function() {
-    // Try to load the card-back image
-    const cardBackImg = new Image();
-    cardBackImg.src = 'images/card-back.jpg';
+    // Since we know the card-back.jpg contains SVG data, let's directly create the pattern
+    createCardBackPattern();
     
-    // Handle both successful load and error cases
+    // For future reference, here's how we would handle an actual image file
+    /*
+    const cardBackImg = new Image();
+    cardBackImg.src = './images/card-back.jpg';
+    
     cardBackImg.onload = function() {
-        // Image loaded successfully, but check if it's the SVG data
-        if (cardBackImg.width === 0 || cardBackImg.height === 0) {
-            // Image might be SVG data stored as a file, create a fallback pattern
-            createCardBackPattern();
-        }
+        // Image loaded successfully
+        console.log('Card back image loaded successfully');
     };
     
     cardBackImg.onerror = function() {
         // Image failed to load, create a fallback pattern
+        console.log('Card back image failed to load, using fallback pattern');
         createCardBackPattern();
     };
+    */
     
     // Function to create a card back pattern
     function createCardBackPattern() {
@@ -286,7 +288,8 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Create a style element and set the card-back background
         const style = document.createElement('style');
-        style.textContent = `.card-back { background-image: url("${dataURL}") !important; }`;
+        style.textContent = `.card-back { background-image: url("${dataURL}") !important; background-size: cover; }`;
+        // Add the style to the document head
         document.head.appendChild(style);
     }
 };
