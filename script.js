@@ -292,7 +292,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add the style to the document head
         document.head.appendChild(style);
     }
-};
+}
 
 // Show game completion message
 function showGameCompleteMessage() {
