@@ -301,6 +301,53 @@ h1 {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
+/* Modal styles for game completion */
+.modal-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    max-width: 500px;
+    width: 80%;
+}
+
+.modal-content h2 {
+    color: #4a4af4;
+    margin-top: 0;
+    font-size: 28px;
+}
+
+.modal-content p {
+    font-size: 18px;
+    margin: 20px 0;
+}
+
+.play-again-button {
+    background-color: #ff5722;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    font-size: 16px;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
 /* Confetti animation */
 .confetti {
     position: fixed;
@@ -308,7 +355,7 @@ h1 {
     height: 10px;
     top: -10px;
     border-radius: 0;
-    animation: fall linear forwards;
+    animation: fall 4s linear forwards;
     z-index: 999;
 }
 

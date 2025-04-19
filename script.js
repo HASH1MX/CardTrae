@@ -38,7 +38,7 @@ function initGame() {
     matchedPairs = 0;
     score = 0;
     timer = 0;
-    gameStarted = false;
+    gameStarted = false; // Set gameStarted to false until first card is flipped
     scoreElement.textContent = score;
     timerElement.textContent = timer;
     gameBoard.innerHTML = '';
