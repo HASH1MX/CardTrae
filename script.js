@@ -1,5 +1,5 @@
 // Card colors for the game
-const cardImages = [
+const cardColors = [
     { name: 'red', color: '#FF0000' },
     { name: 'blue', color: '#0000FF' },
     { name: 'green', color: '#00FF00' },
@@ -7,12 +7,8 @@ const cardImages = [
     { name: 'purple', color: '#800080' },
     { name: 'orange', color: '#FFA500' },
     { name: 'pink', color: '#FFC0CB' },
-    { name: 'cyan', color: '#00FFFF' },
-    { name: 'brown', color: '#A52A2A' },
-    { name: 'teal', color: '#008080' },
-    { name: 'lime', color: '#32CD32' },
-    { name: 'magenta', color: '#FF00FF' }
-    // 12 colors that will be duplicated to create 12 pairs (24 cards total)
+    { name: 'cyan', color: '#00FFFF' }
+    // 8 colors that will be duplicated to create 8 pairs (16 cards total)
 ];
 
 // Game variables
@@ -50,7 +46,7 @@ function initGame() {
     }
     
     // Create pairs of cards
-    const cardPairs = [...cardImages, ...cardImages];
+    const cardPairs = [...cardColors, ...cardColors];
     
     // Shuffle the cards
     shuffleArray(cardPairs);
@@ -154,7 +150,7 @@ function checkForMatch() {
         scoreElement.textContent = score;
         
         // Check if all pairs are matched
-        if (matchedPairs === cardImages.length) { // We have 12 pairs total (24 cards)
+        if (matchedPairs === cardColors.length) { // We have 8 pairs total (16 cards)
             clearInterval(timerInterval);
             setTimeout(() => {
                 showGameCompleteMessage();
@@ -231,68 +227,6 @@ resetButton.addEventListener('click', initGame);
 
 // Initialize the game when the page loads
 window.addEventListener('load', initGame);
-
-// Handle card back image loading
-document.addEventListener('DOMContentLoaded', function() {
-    // Since we know the card-back.jpg contains SVG data, let's directly create the pattern
-    createCardBackPattern();
-    
-    // For future reference, here's how we would handle an actual image file
-    /*
-    const cardBackImg = new Image();
-    cardBackImg.src = './images/card-back.jpg';
-    
-    cardBackImg.onload = function() {
-        // Image loaded successfully
-        console.log('Card back image loaded successfully');
-    };
-    
-    cardBackImg.onerror = function() {
-        // Image failed to load, create a fallback pattern
-        console.log('Card back image failed to load, using fallback pattern');
-        createCardBackPattern();
-    };
-    */
-    
-    // Function to create a card back pattern
-    function createCardBackPattern() {
-        const canvas = document.createElement('canvas');
-        canvas.width = 200;
-        canvas.height = 200;
-        const ctx = canvas.getContext('2d');
-        
-        // Draw a pattern for the card back
-        ctx.fillStyle = '#e0e0e0';
-        ctx.fillRect(0, 0, 200, 200);
-        
-        ctx.strokeStyle = '#a0a0a0';
-        ctx.lineWidth = 2;
-        
-        // Draw grid pattern
-        for (let i = 0; i < 10; i++) {
-            for (let j = 0; j < 10; j++) {
-                if ((i + j) % 2 === 0) {
-                    ctx.beginPath();
-                    ctx.moveTo(i * 20, j * 20);
-                    ctx.lineTo((i + 1) * 20, j * 20);
-                    ctx.lineTo((i + 1) * 20, (j + 1) * 20);
-                    ctx.lineTo(i * 20, (j + 1) * 20);
-                    ctx.closePath();
-                    ctx.stroke();
-                }
-            }
-        }
-        
-        // Convert canvas to data URL
-        const dataURL = canvas.toDataURL();
-        
-        // Create a style element and set the card-back background
-        const style = document.createElement('style');
-        style.textContent = `.card-back { background-image: url("${dataURL}") !important; background-size: cover; }`;
-        // Add the style to the document head
-        document.head.appendChild(style);
-    }
-}
 
 // Show game completion message
 function showGameCompleteMessage() {
