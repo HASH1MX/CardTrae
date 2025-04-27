@@ -1,6 +1,8 @@
 # Memory Card Game
 
 A fun and interactive memory card game built with HTML, CSS, and JavaScript.
+THIS IS MY CHILDHOODS FAVOURITE GAME
+
 
 ## Features
 
