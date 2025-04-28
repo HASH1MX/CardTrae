@@ -4,7 +4,7 @@ A fun and interactive memory card game built with HTML, CSS, and JavaScript.
 THIS IS MY CHILDHOODS FAVOURITE GAME
 
 
-## Features
+## Features :
 
 - 12 colorful card pairs to match
 - Score tracking
