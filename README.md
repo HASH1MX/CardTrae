@@ -14,6 +14,11 @@ THIS IS MY CHILDHOODS FAVOURITE GAME
 
 ## How to Play
 
+1. Click on any card to flip it and reveal its color
+2. Click on another card to find its matching pair
+3. If the cards match, they stay flipped
+4. If they don't match, they flip back
+5. Match all pairs to win the game
 
 
 ## Deployment to GitHub Pages
