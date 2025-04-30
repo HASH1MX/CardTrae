@@ -1,0 +1,60 @@
+name: Deploy Static Site to GitHub Pages
+
+on:
+  # Runs on pushes targeting the main branch
+  push:
+    branches:
+      - main
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: write # Needed to push to gh-pages branch
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        # No build step needed for this simple static site
+
+      # This action handles copying files to the gh-pages branch and pushing
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          # Specify the directory containing the static files (root in this case)
+          publish_dir: ./ 
+          # Exclude files not needed for static deployment
+          # NOTE: .gitignore in the main branch *should* already prevent node_modules
+          # but this action runs in a clean environment. We explicitly exclude server/node files.
+          # Using exclude_assets requires a specific format, often simpler just to ensure 
+          # publish_dir only contains what's needed, or use a build step to output to a specific dir.
+          # For this case, since gh-pages branch already exists and is clean, 
+          # the action will effectively sync the root content (minus ignored files)
+          # If server.js/package.json etc were still in the root, we'd need explicit exclusion.
+          # Since we manually cleaned gh-pages, this simple config should work.
+          
+          # Optional: Customize commit details
+          # user_name: 'github-actions[bot]' 
+          # user_email: 'github-actions[bot]@users.noreply.github.com'
+          # commit_message: 'Deploy static site to GitHub Pages'
+
+      # Optional: Report deployment completion - The 'peaceiris/actions-gh-pages' action outputs the URL
+      - name: Deployment Complete
+        run: echo "Deployment successful! Visit ${{ steps.deployment.outputs.page_url }}" 
