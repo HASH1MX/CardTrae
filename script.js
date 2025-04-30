@@ -7,8 +7,12 @@ const cardColors = [
     { name: 'purple', color: '#800080' },
     { name: 'orange', color: '#FFA500' },
     { name: 'pink', color: '#FFC0CB' },
-    { name: 'cyan', color: '#00FFFF' }
-    // 8 colors that will be duplicated to create 8 pairs (16 cards total)
+    { name: 'cyan', color: '#00FFFF' },
+    { name: 'brown', color: '#A52A2A' },
+    { name: 'teal', color: '#008080' },
+    { name: 'maroon', color: '#800000' },
+    { name: 'olive', color: '#808000' }
+    // 12 colors that will be duplicated to create 12 pairs (24 cards total)
 ];
 
 // Game variables
@@ -150,7 +154,7 @@ function checkForMatch() {
         scoreElement.textContent = score;
         
         // Check if all pairs are matched
-        if (matchedPairs === cardColors.length) { // We have 8 pairs total (16 cards)
+        if (matchedPairs === cardColors.length) { // We have 12 pairs total (24 cards)
             clearInterval(timerInterval);
             setTimeout(() => {
                 showGameCompleteMessage();
