@@ -3,8 +3,7 @@ name: Deploy Static Site to GitHub Pages
 on:
   # Runs on pushes targeting the main branch
   push:
-    branches:
-      - main
+    branches: [ "main" ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -29,17 +28,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
         # No build step needed for this simple static site
 
       # This action handles copying files to the gh-pages branch and pushing
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+        uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           # Specify the directory containing the static files (root in this case)
-          publish_dir: ./ 
+          publish_dir: ./
           # Exclude files not needed for static deployment
           # NOTE: .gitignore in the main branch *should* already prevent node_modules
           # but this action runs in a clean environment. We explicitly exclude server/node files.
@@ -49,6 +48,14 @@ jobs:
           # the action will effectively sync the root content (minus ignored files)
           # If server.js/package.json etc were still in the root, we'd need explicit exclusion.
           # Since we manually cleaned gh-pages, this simple config should work.
+          exclude_assets: |
+            package.json
+            package-lock.json
+            server.js
+            node_modules/**
+            .github/**
+            .git/**
+            .gitignore
           
           # Optional: Customize commit details
           # user_name: 'github-actions[bot]' 
