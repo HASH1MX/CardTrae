@@ -1,4 +1,4 @@
-// Card colors for the game
+// Card colors for the game (Updated with auto-deployment test)
 const cardColors = [
     { name: 'red', color: '#FF0000' },
     { name: 'blue', color: '#0000FF' },
